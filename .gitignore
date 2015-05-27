@@ -1,0 +1,12 @@
+.gradle
+.metadata
+bin
+gen
+.svn
+.settings
+build
+.idea
+*.iml
+*.properties
+gradle/
+gradlew*
