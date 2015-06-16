@@ -1,8 +1,12 @@
 package com.waynell.dialerbox;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -25,5 +29,17 @@ public class SettingsActivity extends PreferenceActivity {
 
 		getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
 		addPreferencesFromResource(R.xml.pref_general);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	public void about(MenuItem item) {
+		Intent intent = new Intent(this, AboutActivity.class);
+		startActivity(intent);
 	}
 }

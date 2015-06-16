@@ -1,7 +1,5 @@
 <resources>
-	<string name="app_name">Dialer Box</string>
-	<string name="title_activity_settings">Dialer Settings</string>
-
+	<string name="app_name">Dialer Settings</string>
 	<string name="off">Off</string>
 
 	<!-- Call vibrations -->
@@ -27,5 +25,13 @@
 	<string name="call_log_attr">Call log attribution</string>
 	<string name="call_incoming_attr">Incoming call attribution</string>
 	<string name="call_outgoing_attr">Outgoing call attribution</string>
+
+	<!-- About -->
+	<string name="about">About</string>
+	<string name="version">Version</string>
+	<string name="author">Author</string>
+	<string name="author_name" translatable="false">Wayne &lt;ywj2167917@gmail.com&gt;</string>
+	<string name="source_code">Source code</string>
+	<string name="source_code_url" translatable="false">https://github.com/waynell/DialerBox</string>
 
 </resources>

@@ -33,8 +33,8 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 
 	public static final String PACKAGE_NAME = XposedMod.class.getPackage().getName();
 
-	public static final List<String> PACKAGE_NAMES = new ArrayList<String>(Arrays.asList(
-		"com.google.android.dialer", "com.android.dialer"));
+	public static final List<String> PACKAGE_NAMES = new ArrayList<>(Arrays.asList(
+			"com.google.android.dialer", "com.android.dialer"));
 
 	// Dialer App
 	private static final String CLASS_PHONE_DIALER = "com.android.dialer.DialerApplication";
@@ -46,8 +46,6 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 
 	// InCall
 	private static final String CLASS_CALL_CARD_FRAGMENT = "com.android.incallui.CallCardFragment";
-
-	private static final String CLASS_CALL_CALLER_INFO = "com.android.incallui.CallerInfo";
 
 	private static final String CLASS_CALL_CALL = "com.android.incallui.Call";
 
@@ -267,7 +265,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 					if (state == CALL_STATE_WAITING ||
 						(state == CALL_STATE_INCOMING && mPreviousCallState == Enum.valueOf(enumInCallState, "INCALL")
 							&& mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_VIBRATION_WAITING, true))) {
-						vibrate(200, 300, 500);
+						vibrate(100, 0, 0);
 					}
 				}
 			});
@@ -278,7 +276,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 					mPrefsPhone.reload();
 					if (mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_VIBRATION_DISCONNECTED, true)) {
 						log("Call disconnected; executing vibrate on call disconnected");
-						vibrate(50, 100, 50);
+						vibrate(100, 0, 0);
 					}
 				}
 			});

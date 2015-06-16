@@ -1,0 +1,23 @@
+<resources>
+	<string name="app_name">通话设置</string>
+	<string name="off">关闭</string>
+
+	<!-- Call vibrations -->
+	<string name="pref_call_vibrations_title">通话震动</string>
+	<string name="call_vibration_connected">接通震动</string>
+	<string name="call_vibration_disconnected">挂断震动</string>
+	<string name="call_vibration_waiting">呼叫等待震动</string>
+
+	<!-- Call log -->
+	<string name="pref_call_log_title">通话归属地</string>
+	<string name="call_log_attr">通话记录归属地</string>
+	<string name="call_incoming_attr">来电归属地</string>
+	<string name="call_outgoing_attr">去电归属地</string>
+
+	<!-- About -->
+	<string name="about">关于</string>
+	<string name="version">版本</string>
+	<string name="author">作者</string>
+	<string name="source_code">源代码</string>
+
+</resources>
