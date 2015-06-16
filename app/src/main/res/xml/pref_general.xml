@@ -1,0 +1,47 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory android:title="@string/pref_call_log_title">
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="call_log_attr"
+			android:title="@string/call_log_attr" />
+
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="call_incoming_attr"
+			android:title="@string/call_incoming_attr" />
+
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="call_outgoing_attr"
+			android:title="@string/call_outgoing_attr" />
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/pref_call_vibrations_title">
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="call_vibration_connected"
+			android:title="@string/call_vibration_connected" />
+
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="call_vibration_disconnected"
+			android:title="@string/call_vibration_disconnected" />
+
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="call_vibration_waiting"
+			android:title="@string/call_vibration_waiting" />
+
+		<!--<ListPreference
+			android:dialogTitle="@string/call_vibration_alert"
+			android:entries="@array/call_vibration_alert_time_array"
+			android:entryValues="@array/call_vibration_alert_time_array_value"
+			android:key="list_preference"
+			android:summary="@string/off"
+			android:title="@string/call_vibration_alert" />-->
+
+	</PreferenceCategory>
+
+
+</PreferenceScreen>
