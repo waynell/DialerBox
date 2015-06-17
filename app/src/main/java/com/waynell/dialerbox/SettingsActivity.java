@@ -14,13 +14,15 @@ public class SettingsActivity extends PreferenceActivity {
 
 	public static final String KEY_CALL_INCOMING_ATTR = "call_incoming_attr";
 
-	public static final String KEY_CALL_OUTGOING_ATTR = "call_outgoing_attr";
-
 	public static final String KEY_CALL_VIBRATION_CONNECTED = "call_vibration_connected";
 
 	public static final String KEY_CALL_VIBRATION_DISCONNECTED = "call_vibration_disconnected";
 
 	public static final String KEY_CALL_VIBRATION_WAITING = "call_vibration_waiting";
+
+	public static final String KEY_SMART_DIAL = "smart_dial";
+
+	public static final String KEY_DIAL_PAD_SHOW = "dial_pad_show";
 
 	@SuppressWarnings("deprecation")
 	@Override

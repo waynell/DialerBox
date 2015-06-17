@@ -1,30 +1,22 @@
 <resources>
 	<string name="app_name">Dialer Settings</string>
-	<string name="off">Off</string>
 
 	<!-- Call vibrations -->
 	<string name="pref_call_vibrations_title">Call vibrations</string>
 	<string name="call_vibration_connected">On call connected</string>
 	<string name="call_vibration_disconnected">On call disconnected</string>
 	<string name="call_vibration_waiting">On call waiting</string>
-	<string name="call_vibration_alert">Call time alert</string>
-	<string name="call_vibration_alert_time">Alter time</string>
-	<string-array name="call_vibration_alert_time_array">
-		<item>45s</item>
-		<item>50s</item>
-		<item>55s</item>
-	</string-array>
-	<string-array name="call_vibration_alert_time_array_value">
-		<item>45</item>
-		<item>50</item>
-		<item>55</item>
-	</string-array>
 
 	<!-- Call log -->
 	<string name="pref_call_log_title">Call attribution</string>
 	<string name="call_log_attr">Call log attribution</string>
-	<string name="call_incoming_attr">Incoming call attribution</string>
-	<string name="call_outgoing_attr">Outgoing call attribution</string>
+	<string name="call_incoming_attr">Incoming/Outgoing call attribution</string>
+
+	<!-- Call Dial -->
+	<string name="pref_dial_pad_title">DialPad Settings</string>
+	<string name="dial_pad_show">Shows dialpad automatically upon opening dialer app</string>
+	<string name="smart_dial">Smart dial for chinese T9 Pinyin</string>
+	<string name="smart_dial_summary">NOTICE:To use it, you must clear data of the Dialer app</string>
 
 	<!-- About -->
 	<string name="about">About</string>

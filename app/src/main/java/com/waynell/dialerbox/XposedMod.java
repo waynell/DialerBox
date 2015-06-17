@@ -1,14 +1,19 @@
 package com.waynell.dialerbox;
 
+import com.android.providers.contacts.HanziToPinyin;
+
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Vibrator;
 import android.text.TextUtils;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -45,6 +50,11 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 	private static final String CLASS_PHONE_CALL_DETAILS_HELPER = "com.android.dialer.PhoneCallDetailsHelper";
 
 	// InCall
+	private static final String CLASS_DIALTACTS_ACTIVITY = "com.android.dialer.DialtactsActivity";
+
+	private static final String CLASS_DIALTACTS_ACTIVITY_GOOGLE =
+		"com.google.android.dialer.extensions.GoogleDialtactsActivity";
+
 	private static final String CLASS_CALL_CARD_FRAGMENT = "com.android.incallui.CallCardFragment";
 
 	private static final String CLASS_CALL_CALL = "com.android.incallui.Call";
@@ -81,8 +91,9 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 			getDialerContext(loadPackageParam);
 			addVibrate(loadPackageParam);
 			addCallLogGeocode(loadPackageParam);
-			addInCallGeocode(loadPackageParam);
-			addOutCallGeocode(loadPackageParam);
+			addCallGeocode(loadPackageParam);
+			addSmartDial(loadPackageParam);
+			showDialPad(loadPackageParam);
 		}
 	}
 
@@ -115,6 +126,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 					if(!mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_LOG_ATTR, false)) {
 						return;
 					}
+
 					String name = (String) XposedHelpers.getObjectField(param.args[0], "name");
 					String number = (String) XposedHelpers.getObjectField(param.args[0], "number");
 
@@ -135,7 +147,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 		}
 	}
 
-	private void addInCallGeocode(XC_LoadPackage.LoadPackageParam param) {
+	private void addCallGeocode(XC_LoadPackage.LoadPackageParam param) {
 		try {
 			final ClassLoader loader = param.classLoader;
 			final Class<?> classCallCardFragment = XposedHelpers.findClass(CLASS_CALL_CARD_FRAGMENT, loader);
@@ -172,14 +184,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 							log("CallCardFragment.setPrimary: " + param.args[3] + "-" + computeTime(time));
 						}
 					});
-		} catch (Throwable throwable) {
-			log(throwable);
-		}
-	}
 
-	private void addOutCallGeocode(XC_LoadPackage.LoadPackageParam param) {
-		try {
-			final ClassLoader loader = param.classLoader;
 
 			//com.android.incallui.StatusBarNotifier#getContentTitle(ContactCacheEntry contactInfo, Call call)
 			Class<?> classContactCacheEntry = XposedHelpers.findClass(CLASS_CALL_CONTACT_CACHE_ENTRY, param.classLoader);
@@ -194,7 +199,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 					@Override
 					protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 						mPrefsPhone.reload();
-						if (!mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_OUTGOING_ATTR, true)) {
+						if (!mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_INCOMING_ATTR, true)) {
 							return;
 						}
 
@@ -335,6 +340,114 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 					}
 				});
 		} catch(Throwable t) {
+			log(t);
+		}
+	}
+
+	private void addSmartDial(XC_LoadPackage.LoadPackageParam param) {
+		try {
+			final ClassLoader classLoader = param.classLoader;
+			// public static ArrayList<String> com.android.dialer.dialpad.SmartDialPrefix.generateNamePrefixes(String index)
+			XposedHelpers.findAndHookMethod("com.android.dialer.dialpad.SmartDialPrefix", classLoader,
+				"generateNamePrefixes", String.class, new XC_MethodHook() {
+					// Convert index into Pin Yin.
+					@Override
+					protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
+						mPrefsPhone.reload();
+						if (!mPrefsPhone.getBoolean(SettingsActivity.KEY_SMART_DIAL, false)) {
+							return;
+						}
+
+						final String name = (String) param.args[0];
+						if (name == null) {
+							return;
+						}
+						final List<HanziToPinyin.Token> tokens = HanziToPinyin.getInstance().get(name);
+						if (tokens.isEmpty()) {
+							return;
+						}
+						final StringBuilder buffer = new StringBuilder();
+						for (final HanziToPinyin.Token token : tokens) {
+							buffer.append(' ').append(token.target);
+						}
+						final String full = buffer.substring(1).toLowerCase(Locale.US);
+						log(name + ":" + full);
+						param.args[0] = full;
+					}
+				});
+
+			// boolean com.android.dialer.dialpad.SmartDialNameMatcher
+			//	.matchesCombination(String displayName, String query, ArrayList<SmartDialMatchPosition> matchList)
+			XposedHelpers.findAndHookMethod("com.android.dialer.dialpad.SmartDialNameMatcher", classLoader,
+				"matchesCombination", String.class, String.class, ArrayList.class, new XC_MethodHook() {
+
+					@Override
+					protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
+						mPrefsPhone.reload();
+						if (!mPrefsPhone.getBoolean(SettingsActivity.KEY_SMART_DIAL, false)) {
+							return;
+						}
+
+						final String name = (String) param.args[0];
+						if (name == null) {
+							return;
+						}
+						final List<HanziToPinyin.Token> tokens = HanziToPinyin.getInstance().get(name);
+						if (tokens.isEmpty()) {
+							return;
+						}
+						final StringBuilder full = new StringBuilder();
+						for (final HanziToPinyin.Token token : tokens) {
+							full.append(' ').append(token.target);
+						}
+						param.args[0] = full.substring(1).toLowerCase(Locale.US);
+					}
+
+					@Override
+					protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
+						mPrefsPhone.reload();
+						if (!mPrefsPhone.getBoolean(SettingsActivity.KEY_SMART_DIAL, false)) {
+							return;
+						}
+
+						final ArrayList<?> pos_list = (ArrayList<?>) param.args[2];
+						pos_list.clear();
+						log(param.args[1] + " ? " + param.args[0] + " = " + param.getResult());
+					}
+				});
+		} catch (Throwable t) {
+			log(t);
+		}
+	}
+
+	private void showDialPad(XC_LoadPackage.LoadPackageParam param) {
+		try {
+			final Class<?> classDialtactsActivity = XposedHelpers.findClass(CLASS_DIALTACTS_ACTIVITY, param.classLoader);
+
+			XposedHelpers.findAndHookMethod(classDialtactsActivity, "displayFragment", Intent.class, new XC_MethodHook() {
+				@Override
+				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+					mPrefsPhone.reload();
+					if (!mPrefsPhone.getBoolean(SettingsActivity.KEY_DIAL_PAD_SHOW, false)) {
+						return;
+					}
+
+					Object dpFrag = XposedHelpers.getObjectField(param.thisObject, "mDialpadFragment");
+					if (dpFrag != null) {
+						final String realClassName = param.thisObject.getClass().getName();
+						if (realClassName.equals(CLASS_DIALTACTS_ACTIVITY)) {
+							XposedHelpers.callMethod(param.thisObject, "showDialpadFragment", false);
+							log("showDialpadFragment() called within " + realClassName);
+						} else if (realClassName.equals(CLASS_DIALTACTS_ACTIVITY_GOOGLE)) {
+							final Class<?> superc = param.thisObject.getClass().getSuperclass();
+							Method m = XposedHelpers.findMethodExact(superc, "showDialpadFragment", boolean.class);
+							m.invoke(param.thisObject, false);
+							log("showDialpadFragment() called within " + realClassName);
+						}
+					}
+				}
+			});
+		} catch (Throwable t) {
 			XposedBridge.log(t);
 		}
 	}

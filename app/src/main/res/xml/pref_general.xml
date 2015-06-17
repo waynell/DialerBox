@@ -10,11 +10,6 @@
 			android:defaultValue="true"
 			android:key="call_incoming_attr"
 			android:title="@string/call_incoming_attr" />
-
-		<CheckBoxPreference
-			android:defaultValue="true"
-			android:key="call_outgoing_attr"
-			android:title="@string/call_outgoing_attr" />
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/pref_call_vibrations_title">
@@ -40,6 +35,21 @@
 			android:key="list_preference"
 			android:summary="@string/off"
 			android:title="@string/call_vibration_alert" />-->
+
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/pref_dial_pad_title">
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="smart_dial"
+			android:title="@string/smart_dial"
+			android:summary="@string/smart_dial_summary"/>
+
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="dial_pad_show"
+			android:title="@string/dial_pad_show"/>
+
 
 	</PreferenceCategory>
 

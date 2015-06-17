@@ -1,6 +1,5 @@
 <resources>
 	<string name="app_name">通话设置</string>
-	<string name="off">关闭</string>
 
 	<!-- Call vibrations -->
 	<string name="pref_call_vibrations_title">通话震动</string>
@@ -11,8 +10,13 @@
 	<!-- Call log -->
 	<string name="pref_call_log_title">通话归属地</string>
 	<string name="call_log_attr">通话记录归属地</string>
-	<string name="call_incoming_attr">来电归属地</string>
-	<string name="call_outgoing_attr">去电归属地</string>
+	<string name="call_incoming_attr">来去电归属地</string>
+
+	<!-- Call Dial -->
+	<string name="pref_dial_pad_title">拨号盘设置</string>
+	<string name="dial_pad_show">打开拨号程序时自动显示拨号盘</string>
+	<string name="smart_dial">T9拼音智能拨号</string>
+	<string name="smart_dial_summary">注意：需要手动清除拨号程序的数据后才能生效</string>
 
 	<!-- About -->
 	<string name="about">关于</string>
