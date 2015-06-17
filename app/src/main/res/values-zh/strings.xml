@@ -1,5 +1,6 @@
 <resources>
 	<string name="app_name">通话设置</string>
+	<string name="app_description">为Android 5.x(AOSP)的拨号器添加T9智能拨号，来去电归属地，通话震动等功能</string>
 
 	<!-- Call vibrations -->
 	<string name="pref_call_vibrations_title">通话震动</string>
