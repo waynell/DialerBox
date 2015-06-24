@@ -24,6 +24,8 @@ public class SettingsActivity extends PreferenceActivity {
 
 	public static final String KEY_DIAL_PAD_SHOW = "dial_pad_show";
 
+	public static final String KEY_CALL_FOR_CHINA = "call_for_china";
+
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

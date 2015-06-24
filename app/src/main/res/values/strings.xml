@@ -12,6 +12,7 @@
 	<string name="pref_call_log_title">Call attribution</string>
 	<string name="call_log_attr">Call log attribution</string>
 	<string name="call_incoming_attr">Incoming/Outgoing call attribution</string>
+	<string name="call_for_china">Force use China Country Iso</string>
 
 	<!-- Call Dial -->
 	<string name="pref_dial_pad_title">DialPad Settings</string>

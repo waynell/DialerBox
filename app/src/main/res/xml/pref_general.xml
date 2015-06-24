@@ -10,6 +10,10 @@
 			android:defaultValue="true"
 			android:key="call_incoming_attr"
 			android:title="@string/call_incoming_attr" />
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="call_for_china"
+			android:title="@string/call_for_china" />
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/pref_call_vibrations_title">

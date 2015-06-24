@@ -12,6 +12,7 @@
 	<string name="pref_call_log_title">通话归属地</string>
 	<string name="call_log_attr">通话记录归属地</string>
 	<string name="call_incoming_attr">来去电归属地</string>
+	<string name="call_for_china">强制使用中国归属地代码</string>
 
 	<!-- Call Dial -->
 	<string name="pref_dial_pad_title">拨号盘设置</string>
