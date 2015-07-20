@@ -131,8 +131,8 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 					String number = (String) XposedHelpers.getObjectField(param.args[0], "number");
 
 					if (!TextUtils.isEmpty(number)) {
-						String geocode = GeocoderUtils.getGeocodedLocationFor(mContext, loader,
-							mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false), number);
+						String geocode = GeocoderUtils.getGeocodedLocationFor(mContext,
+								number, loader, mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false));
 						if (!TextUtils.isEmpty(geocode)) {
 							if (TextUtils.isEmpty(name)) {
 								param.setResult(geocode);
@@ -175,11 +175,11 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 
 							String label = param.args[3] == null ? "" : (String) param.args[3];
 							if (!(boolean) param.args[2] && !TextUtils.isEmpty((String) param.args[0])) {
-								param.args[3] = label + " " + GeocoderUtils.getGeocodedLocationFor(mContext, loader,
-									mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false), (String) param.args[0]);
+								param.args[3] = label + " " + GeocoderUtils.getGeocodedLocationFor(mContext,
+										(String) param.args[0], loader, mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false));
 							} else if ((boolean) param.args[2] && !TextUtils.isEmpty((String) param.args[1])) {
-								param.args[3] = GeocoderUtils.getGeocodedLocationFor(mContext, loader,
-									mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false), (String) param.args[1]);
+								param.args[3] = GeocoderUtils.getGeocodedLocationFor(mContext,
+										(String) param.args[1], loader, mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false));
 								if (param.args[0] != null) {
 									param.args[0] = null;
 								}
@@ -213,8 +213,8 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 						if (!isConferenceCall || isCan) {
 							String number = (String) XposedHelpers.getObjectField(param.args[0], "number");
 							if (!TextUtils.isEmpty(number)) {
-								String geocode = GeocoderUtils.getGeocodedLocationFor(mContext, loader,
-									mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false), number);
+								String geocode = GeocoderUtils.getGeocodedLocationFor(mContext,
+										number, loader, mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false));
 								if (!TextUtils.isEmpty(geocode)) {
 									param.setResult(param.getResult() + " " + geocode);
 								}
