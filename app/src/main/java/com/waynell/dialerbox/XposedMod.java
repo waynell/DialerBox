@@ -49,6 +49,8 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 
 	private static final String CLASS_PHONE_CALL_DETAILS_HELPER = "com.android.dialer.PhoneCallDetailsHelper";
 
+    private static final String CLASS_PHONE_CALL_DETAILS_HELPER_23 = "com.android.dialer.calllog.PhoneCallDetailsHelper";
+
 	// InCall
 	private static final String CLASS_DIALTACTS_ACTIVITY = "com.android.dialer.DialtactsActivity";
 
@@ -78,7 +80,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 	private static final int CALL_STATE_INCOMING = Build.VERSION.SDK_INT >= 22 ? 4 : 3;
 
 	private static final int CALL_STATE_WAITING = Build.VERSION.SDK_INT >= 22 ? 5 : 4;
-	
+
 	@Override
 	public void initZygote(StartupParam startupParam) throws Throwable {
 		mPrefsPhone = new XSharedPreferences(PACKAGE_NAME);
@@ -110,9 +112,17 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 
 	private void addCallLogGeocode(XC_LoadPackage.LoadPackageParam param) {
 		try {
+            String helperClassFullName = "";
 			final ClassLoader loader = param.classLoader;
 			final Class<?> classPhoneCallDetails = XposedHelpers.findClass(CLASS_PHONE_CALL_DETAILS, loader);
-			final Class<?> classPhoneCallDetailsHelper = XposedHelpers.findClass(CLASS_PHONE_CALL_DETAILS_HELPER, loader);
+
+            if (Build.VERSION.SDK_INT == 23) {
+                helperClassFullName = CLASS_PHONE_CALL_DETAILS_HELPER_23;
+            } else if (Build.VERSION.SDK_INT >= 21) {
+                helperClassFullName = CLASS_PHONE_CALL_DETAILS_HELPER;
+            }
+
+            final Class<?> classPhoneCallDetailsHelper = XposedHelpers.findClass(helperClassFullName, loader);
 
 			if (classPhoneCallDetails == null || classPhoneCallDetailsHelper == null) {
 				return;
@@ -127,7 +137,14 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 						return;
 					}
 
-					String name = (String) XposedHelpers.getObjectField(param.args[0], "name");
+                    String fieldName = "";
+                    if (Build.VERSION.SDK_INT == 23) {
+                        fieldName = "nameAlternative";
+                    } else if (Build.VERSION.SDK_INT >= 21) {
+                        fieldName = "name";
+                    }
+
+					String name = (String) XposedHelpers.getObjectField(param.args[0], fieldName);
 					String number = (String) XposedHelpers.getObjectField(param.args[0], "number");
 
 					if (!TextUtils.isEmpty(number)) {
@@ -157,36 +174,43 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 				return;
 			}
 
-			// com.android.incallui.CardFragment#setPrimary(String number, String name,
-			// boolean nameIsNumber, String label, Drawable photo, boolean isSipCall)
-			XposedHelpers.findAndHookMethod(classCallCardFragment, "setPrimary", String.class, String.class, boolean.class,
-					String.class, Drawable.class, boolean.class, new XC_MethodHook() {
-						@Override
-						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-							mPrefsPhone.reload();
-							if (!mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_INCOMING_ATTR, true)) {
-								return;
-							}
+            XC_MethodHook addCallHook = new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    mPrefsPhone.reload();
+                    if (!mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_INCOMING_ATTR, true)) {
+                        return;
+                    }
 
-							long time = computeTime(0);
-							// String number, String name, boolean nameIsNumber, String label
-							// Contact people --- xxxxx, xx, false, mobile etc.
-							// Not contact people --- null, xxxxx, true, null.
+                    long time = computeTime(0);
+                    // String number, String name, boolean nameIsNumber, String label
+                    // Contact people --- xxxxx, xx, false, mobile etc.
+                    // Not contact people --- null, xxxxx, true, null.
 
-							String label = param.args[3] == null ? "" : (String) param.args[3];
-							if (!(boolean) param.args[2] && !TextUtils.isEmpty((String) param.args[0])) {
-								param.args[3] = label + " " + GeocoderUtils.getGeocodedLocationFor(mContext,
-										(String) param.args[0], loader, mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false));
-							} else if ((boolean) param.args[2] && !TextUtils.isEmpty((String) param.args[1])) {
-								param.args[3] = GeocoderUtils.getGeocodedLocationFor(mContext,
-										(String) param.args[1], loader, mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false));
-								if (param.args[0] != null) {
-									param.args[0] = null;
-								}
-							}
-							log("CallCardFragment.setPrimary: " + param.args[3] + "-" + computeTime(time));
-						}
-					});
+                    String label = param.args[3] == null ? "" : (String) param.args[3];
+                    if (!(boolean) param.args[2] && !TextUtils.isEmpty((String) param.args[0])) {
+                        param.args[3] = label + " " + GeocoderUtils.getGeocodedLocationFor(mContext,
+                                (String) param.args[0], loader, mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false));
+                    } else if ((boolean) param.args[2] && !TextUtils.isEmpty((String) param.args[1])) {
+                        param.args[3] = GeocoderUtils.getGeocodedLocationFor(mContext,
+                                (String) param.args[1], loader, mPrefsPhone.getBoolean(SettingsActivity.KEY_CALL_FOR_CHINA, false));
+                        if (param.args[0] != null) {
+                            param.args[0] = null;
+                        }
+                    }
+                    log("CallCardFragment.setPrimary: " + param.args[3] + "-" + computeTime(time));
+                }
+            };
+
+            if (Build.VERSION.SDK_INT == 23) {
+                XposedHelpers.findAndHookMethod(classCallCardFragment, "setPrimary", String.class, String.class, boolean.class,
+                        String.class, Drawable.class, boolean.class, boolean.class, addCallHook);
+            }else if (Build.VERSION.SDK_INT >= 21) {
+                // com.android.incallui.CardFragment#setPrimary(String number, String name,
+                // boolean nameIsNumber, String label, Drawable photo, boolean isSipCall)
+                XposedHelpers.findAndHookMethod(classCallCardFragment, "setPrimary", String.class, String.class, boolean.class,
+                        String.class, Drawable.class, boolean.class, addCallHook);
+            }
 
 
 			//com.android.incallui.StatusBarNotifier#getContentTitle(ContactCacheEntry contactInfo, Call call)
